@@ -123,8 +123,9 @@ export class SensusClient {
 			this._cachedProposals[spaceId] &&
 			this._cachedProposals[spaceId][id] &&
 			this._cachedProposals[spaceId][id].choices
-		)
+		) {
 			return this._cachedProposals[spaceId][id];
+		}
 		const result = (await this.queryContract(VitasensusContract, 'getSpaceProposal', [
 			spaceId,
 			id,
@@ -330,10 +331,10 @@ export class SensusClient {
 
 		const result = (await this.queryContract(VitasensusContract, 'getSpaceSettings', [
 			id,
-		])) as unknown as string[];
+		])) as any;
 
 		const createProposalThreshold = parseInt(result[0]);
-		const onlyAdminsCanCreateProposal = result[1] === '1';
+		const onlyAdminsCanCreateProposal = result[1] === true;
 
 		const spaceSettings: SpaceSettings = {
 			createProposalThreshold,
@@ -388,7 +389,7 @@ export class SensusClient {
 		return votes;
 	}
 
-	async getVotingPower(spaceId: number, height: number): Promise<number> {
+	async getVotingPower(spaceId: number, height: number, network: string): Promise<number> {
 		console.log(this.vitasensusServerURL);
 
 		if (!this.vitasensusServerURL) return 0;
@@ -396,9 +397,14 @@ export class SensusClient {
 
 		const { token } = (await this.getSpace(spaceId)) ?? {};
 		if (!token) return 0;
-		const response = await axios.get(`balance/${height.toFixed(0)}/${token?.id}/${this.address}`, {
-			baseURL: this.vitasensusServerURL,
+		if (!this.address) {
+			return 0;
+		}
+		console.log('snapsoht', height, 'address', this.address)
+		const response = await axios.get(`/api/balance/${network}/${height.toFixed(0)}/${token?.id}/${this.address}`, {
+			// baseURL: this.vitasensusServerURL,
 		});
+		console.log('get voting power', response)
 
 		return new BigNumber(response.data.balance ?? '0', 10)
 			.idiv(Math.pow(10, token.decimals), 10)
@@ -412,11 +418,16 @@ export class SensusClient {
 			spaceId,
 			proposalId,
 			user,
-		])) as object[] as unknown[] as string[];
+		])) as any;
 
 		console.log(result);
 
-		return result[0] !== '0';
+		return result[0];
+	}
+	
+	async getSpaceCreationFee(): Promise<string> {
+		const result: any = await this.queryContract(VitasensusContract, 'SPACE_CREATION_FEE', []);
+		return result[0]
 	}
 
 	async createSpace(
@@ -428,6 +439,7 @@ export class SensusClient {
 	): Promise<any> {
 		await this.loadTokenDetails(spaceToken);
 		// console.log(this.spaceCreationFee.toFixed(0));
+		const fee = await this.getSpaceCreationFee();
 
 		const result = (await this.callContract(
 			VitasensusContract,
@@ -441,7 +453,8 @@ export class SensusClient {
 				this.getToken(spaceToken).decimals,
 			],
 			ViteTokenId,
-			this.spaceCreationFee.toFixed(0)
+			// this.spaceCreationFee.toFixed(0)
+			fee,
 		)) as any;
 
 		const events: any[] = (await this.scanEvents(
@@ -497,12 +510,13 @@ export class SensusClient {
 
 	async isSpaceAdmin(spaceId: number): Promise<boolean> {
 		if (!this.address) return false;
+		console.log("query isSpaceAdmin", VitasensusContract, spaceId, this.address);
 		const result = (await this.queryContract(VitasensusContract, 'isSpaceAdmin', [
 			spaceId,
 			this.address,
-		])) as any as string[];
+		])) as any;
 
-		return result[0] === '1';
+		return result[0];
 	}
 
 	async canRedeemSpaceCreationFee(spaceId: number): Promise<boolean> {
@@ -540,7 +554,13 @@ export class SensusClient {
 		const space = await this.getSpace(spaceId);
 		const spaceSettings = await this.getSpaceSettings(spaceId);
 		const isAdmin = await this.isSpaceAdmin(spaceId);
-		const snapshot = await this.serverViteApi.request('ledger_getSnapshotChainHeight');
+
+		let snapshot: any;
+		try {
+			snapshot = await this.serverViteApi.request('ledger_getSnapshotChainHeight');
+		} catch (error) {
+			console.log(error);
+		}
 		const result = (await this.callContract(
 			VitasensusContract,
 			'createProposal',
@@ -576,7 +596,7 @@ export class SensusClient {
 		return proposal!;
 	}
 
-	async vote(spaceId: number, proposal: number, choiceIndex: number): Promise<void> {
+	async vote(spaceId: number, proposal: number, choiceIndex: number, network: string): Promise<void> {
 		if (!this.signMessage) throw Error('Cannot sign message');
 		const message = `Sign this message to confirm your vote
 
@@ -587,9 +607,9 @@ Choice index: ${choiceIndex}`;
 		const { signature, publicKey } = await this.signMessage(message);
 
 		await axios.put(
-			`vote/${spaceId}/${proposal}`,
+			`/api/vote/${network}/${spaceId}/${proposal}`,
 			{ signature, publicKey, choiceIndex },
-			{ baseURL: this.vitasensusServerURL }
+			// { baseURL: this.vitasensusServerURL }
 		);
 	}
 

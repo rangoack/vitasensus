@@ -77,6 +77,7 @@ export function useSpaceSettings(id?: number): SpaceSettings | null | '404' {
 					(e) => null
 				)
 				.then((settings) => {
+					console.log("useEffect space settings", settings);
 					!settings && setSpaceNotFound(true);
 					settings && setSpaceSettings(settings);
 					settings && setSpaceNotFound(false);

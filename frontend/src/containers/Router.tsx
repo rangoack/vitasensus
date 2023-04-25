@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
-import WS_RPC from '@vite/vitejs-ws';
+import { Buffer } from 'buffer';
+// import WS_RPC from '@vite/vitejs-ws';
 // @ts-ignore
-import HTTP_RPC from '@vite/vitejs-http';
-import { accountBlock, ViteAPI, abi } from '@vite/vitejs';
+// import HTTP_RPC from '@vite/vitejs-http';
+import { accountBlock, ViteAPI, abi, WS_RPC, HTTP_RPC } from '@vite/vitejs';
 import { connect } from '../utils/globalContext';
 import { State, ViteBalanceInfo } from '../utils/types';
 import Toast from './Toast';
@@ -62,6 +63,7 @@ const Router = ({ setState, vcInstance, networkType, viteBalanceInfo }: Props) =
 			providerWsURLs[networkType] ||
 			(networkType === 'mainnet' ? providerWsURLs.mainnet : providerWsURLs.testnet);
 
+		console.log('vite provider:', url, networkType);
 		return url.startsWith('ws')
 			? new WS_RPC(url, providerTimeout, providerOptions)
 			: new HTTP_RPC(url, providerTimeout, providerOptions);
@@ -71,6 +73,7 @@ const Router = ({ setState, vcInstance, networkType, viteBalanceInfo }: Props) =
 		const url =
 			serverURLs[networkType] ||
 			(networkType === 'mainnet' ? serverURLs.mainnet : serverURLs.testnet);
+		console.log('server url:', url, networkType)
 		return url;
 	}, [networkType]);
 
@@ -78,16 +81,19 @@ const Router = ({ setState, vcInstance, networkType, viteBalanceInfo }: Props) =
 		const url =
 		gviteServerURLs[networkType] ||
 		(networkType === 'mainnet' ? gviteServerURLs.mainnet : gviteServerURLs.testnet);
+		console.log('server http rpc', url, networkType);
 		return new HTTP_RPC(url, providerTimeout, providerOptions);
 	}, [networkType]);
 
 	const viteApi = useMemo(() => {
+		console.log("init viteApi")
 		return new ViteAPI(rpc, () => {
 			//
 		});
 	}, [rpc]);
 
 	const serverViteApi = useMemo(() => {
+		console.log("init serverViteApi")
 		return new ViteAPI(serverRpc, () => {});
 	}, [serverRpc]);
 
@@ -176,6 +182,7 @@ const Router = ({ setState, vcInstance, networkType, viteBalanceInfo }: Props) =
 		[connectedAccount, networkType, vcInstance, viteApi]
 	);
 	useEffect(() => {
+		console.log("set callContract", typeof callContract)
 		setState({ callContract });
 	}, [setState, callContract]);
 
@@ -184,12 +191,13 @@ const Router = ({ setState, vcInstance, networkType, viteBalanceInfo }: Props) =
 			if (!vcInstance) {
 				return;
 			}
-			return await vcInstance.signMessage({ message: new Buffer(message).toString('base64') });
+			return await vcInstance.signMessage({ message: Buffer.from(message).toString('base64') });
 		},
 		[vcInstance]
 	);
 
 	useEffect(() => {
+		console.log("set signMessage", typeof signMessage)
 		setState({ signMessage });
 	}, [setState, signMessage]);
 
@@ -232,6 +240,7 @@ const Router = ({ setState, vcInstance, networkType, viteBalanceInfo }: Props) =
 	);
 
 	useEffect(() => {
+		console.log("set queryContract", typeof queryContract)
 		setState({ queryContract });
 	}, [setState, queryContract]);
 

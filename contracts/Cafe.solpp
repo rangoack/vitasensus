@@ -26,3 +26,23 @@ contract Cafe {
       emit Buy(msg.sender, to, numOfCups);
    }
 }
+
+contract Foo {
+    uint256 public time;
+
+    function setVal(uint256 val) public {
+        time = val;
+    }
+}
+
+contract Baz {
+    uint256 public time;
+    
+    function setTime() public  {
+        time = block.timestamp;
+    }
+
+    function setVal(uint256 val) public {
+        time = val;
+    }
+}

@@ -34,7 +34,7 @@ contract Vitasensus is Ownable {
 	event ProposalExecuted(uint256 indexed proposalId, uint256 indexed spaceId, uint256 choiceId);
 
 	vitetoken private constant VITE_TOKEN_ID = "tti_5649544520544f4b454e6e40";
-	uint256 public constant SPACE_CREATION_FEE = 100000 * 10**18;
+	uint256 public constant SPACE_CREATION_FEE = 10 * 10**18;
 
 	enum ProposalState {
 		Active,

@@ -1,0 +1,3 @@
+[submodule "vitasensus-operator-server"]
+	path = vitasensus-operator-server
+	url = git@github.com:rangoack/vitasensus-operator-server.git

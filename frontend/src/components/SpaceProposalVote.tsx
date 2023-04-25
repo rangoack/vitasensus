@@ -23,7 +23,7 @@ export const SpaceProposalVote = ({
 	const [votingPower, setVotingPower] = useState(0);
 	const {
 		// @ts-ignore
-		state: { vcInstance },
+		state: { vcInstance, networkType },
 	} = useContext(GlobalContext);
 
 	useEffect(() => {
@@ -32,13 +32,13 @@ export const SpaceProposalVote = ({
 			if (!proposal) return 0;
 			console.log(proposal);
 
-			const votingPower = await client.getVotingPower(proposal.spaceId, proposal.snapshot);
+			const votingPower = await client.getVotingPower(proposal.spaceId, proposal.snapshot, networkType);
 			if (votingPower) {
 				return votingPower;
 			}
 			return 0;
 		})().then(setVotingPower);
-	}, [client, proposal, _]);
+	}, [client, proposal, networkType, _]);
 
 	const [hasVoted, setHasVoted] = useState<boolean | null>(null);
 
@@ -81,14 +81,14 @@ export const SpaceProposalVote = ({
 		}
 		setLoading(true);
 		try {
-			await client.vote(proposal.spaceId, proposal.id, selectedChoice);
+			await client.vote(proposal.spaceId, proposal.id, selectedChoice, networkType);
 			setSelectedChoice(null);
 			onVoteSubmitted();
 		} catch (e) {
 			console.error(e);
 		}
 		setLoading(false);
-	}, [client, onVoteSubmitted, proposal, selectedChoice]);
+	}, [client, onVoteSubmitted, proposal, selectedChoice, networkType]);
 
 	return (
 		<Block

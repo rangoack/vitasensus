@@ -44,6 +44,7 @@ export class VC extends Connector {
 	async signAndSendTx(params: object[]) {
 		return new Promise((resolve, reject) => {
 			
+			console.log(params);
 			this.sendCustomRequest({ method: 'vite_signAndSendTx', params })
 				.then((result: object) => {
 					

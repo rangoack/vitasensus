@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import { abi, utils } from '@vite/vitejs';
 import { ViteAPI } from '@vite/vitejs/distSrc/utils/type';
 import { waitFor } from './misc';

@@ -4,6 +4,7 @@ import { Block } from './Block';
 import { Loader } from './Loader';
 import { PrimaryButton } from './PrimaryButton';
 import TextInput from './TextInput';
+import { useClient } from '../hooks/client';
 
 const InputLabel = ({ label }: { label: string }) => (
 	<label className="mb-1 md:mb-1.5 text-lg block font-semibold">{label}</label>
@@ -50,6 +51,15 @@ export const ProfileDetailsSettingsBlock = ({
 		initialValues?.website,
 		initialValues?.token,
 	]);
+
+	const client = useClient();
+	const [fee, setFee] = useState('');
+	useEffect(() => {
+		(async () => {
+			const fee = await client.getSpaceCreationFee();
+			setFee(fee);
+		})()
+	}, [client])
 
 	return (
 		<Block titleClassName="text-xl" title="Profile">
@@ -127,7 +137,7 @@ export const ProfileDetailsSettingsBlock = ({
 				<div>
 					{!initialValues && (
 						<p className="text-orange-300 mb-2">
-							100,000 VITE will be staked for 90 days to create a space. Do you wish to continue?
+							{fee.slice(0, -18)} VITE will be staked for 90 days to create a space. Do you wish to continue?
 						</p>
 					)}
 					<PrimaryButton disabled={loading}>
