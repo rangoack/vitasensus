@@ -1,6 +1,6 @@
 import { connect } from '../utils/globalContext';
 import tw from 'tailwind-styled-components';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import TextInput from './TextInput';
 import { SpaceCreateProposalChoices } from './SpaceCreateProposalChoices';
 import { SpaceCreateProposalTransactions } from './SpaceCreateProposalTransactions';
@@ -103,6 +103,19 @@ export const SpaceCreateProposal = () => {
 		[actions.length, choices.length, description, title]
 	);
 
+	const [submitable, setSubmitable] = useState(false);
+	useEffect(() => {
+		if (isLoading
+			|| !settings
+			|| !inSpace
+			|| formIsInvalid
+			|| (!isSpaceAdmin && settings && settings !== '404' && settings.onlyAdminsCanCreateProposal)) {
+			setSubmitable(false)
+		} else {
+			setSubmitable(true)
+		}
+	}, [isLoading, settings, inSpace, formIsInvalid, isSpaceAdmin])
+
 	return !space ? (
 		<></>
 	) : (
@@ -153,7 +166,7 @@ export const SpaceCreateProposal = () => {
 					</p>
 				</div>
 			)}
-			<PrimaryButton disabled={isLoading || !settings || !inSpace || formIsInvalid}>
+			<PrimaryButton className="text-white" disabled={!submitable}>
 				{isLoading ? (
 					<>
 						<Loader className="h-6 w-6" /> Loading...
