@@ -103,8 +103,19 @@ export class SensusClient {
 					[spaceId]
 				)) as unknown as string[];
 				const proposalCount = new BigNumber(proposalCountResult[0]).toNumber();
+				let start, end;
+				if ( proposalCount < skip + limit) {
+					start = proposalCount - 1;
+				} else {
+					start = skip + limit - 1;
+				}
+				if (skip > 0) {
+					end = skip;
+				} else {
+					end = 0;
+				}
 
-				for (let i = skip; i < skip + limit && i < proposalCount; i++) {
+				for (let i = start; i >= end; i--) {
 					const proposal = await this.getProposal(spaceId, i);
 					proposal && proposals.push(proposal);
 				}
