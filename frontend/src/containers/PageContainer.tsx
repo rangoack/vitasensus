@@ -139,7 +139,7 @@ function Sidebar({ isOpen, close }: { isOpen?: boolean; close?: () => void }) {
 		>
 			<ul className="flex flex-col gap-y-6">
 				<li>
-					<SidebarItem avatar={<ViteLogo />} label="Home" href="/" className="border-none" />
+					<SidebarItem avatar={<ViteLogo />} label="Home" href="/" className="border-none vite-logo" />
 				</li>
 				<li>
 					<SidebarItem

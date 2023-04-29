@@ -118,7 +118,7 @@ export const SpaceProposalVote = ({
 						disabled={
 							loading || !inSpace || hasVoted || votingPower <= 0 || selectedChoice === null
 						}
-						className="mx-auto"
+						className="mx-auto text-white"
 						onClick={submitVote}
 					>
 						{loading ? (

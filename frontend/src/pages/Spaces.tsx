@@ -13,7 +13,7 @@ const Spaces = () => {
 					label="Search"
 					value={search}
 					onUserInput={setSearch}
-					containerClassName="w-full lg:w-auto grow "
+					containerClassName="w-full lg:w-auto grow"
 				/>
 			</div>
 			<SpacesList query={search} />

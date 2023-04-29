@@ -14,7 +14,7 @@ const App = () => {
 		(async () => {
 			const vcSession = getValidVCSession();
 			const state: Pick<State, 'networkType' | 'languageType' | 'vcInstance'> = {
-				networkType: localStorage.networkType || 'testnet',
+				networkType: localStorage.networkType || 'mainnet',
 				languageType: localStorage.languageType || 'en',
 				vcInstance: vcSession ? initViteConnect(vcSession) : null,
 			};

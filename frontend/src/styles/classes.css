@@ -55,3 +55,7 @@
 		@apply bg-skin-alt animate-pulse-fast;
 	}
 }
+
+.vite-logo{
+	color: #0070ff;
+}

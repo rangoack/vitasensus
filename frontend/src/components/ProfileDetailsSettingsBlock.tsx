@@ -140,7 +140,7 @@ export const ProfileDetailsSettingsBlock = ({
 							{fee.slice(0, -18)} VITE will be staked for 90 days to create a space. Do you wish to continue?
 						</p>
 					)}
-					<PrimaryButton disabled={loading}>
+					<PrimaryButton className="text-white" disabled={loading}>
 						{loading ? (
 							<>
 								<Loader className="h-6 w-6" /> Loading...
