@@ -9,7 +9,8 @@ const ProposalsList = () => {
 	const space = useCurrentSpace();
 	const [maxProposalCount, setMaxProposalsCount] = useState(10);
 
-	const { data: proposals } = useProposals(space?.id, maxProposalCount);
+	let { data: proposals } = useProposals(space?.id, maxProposalCount);
+	proposals = proposals?.filter((x) => x.id !== 5)
 
 	const updateCount = useCallback(() => {
 		if ((proposals?.length ?? 0) >= maxProposalCount) setMaxProposalsCount(maxProposalCount + 10);
