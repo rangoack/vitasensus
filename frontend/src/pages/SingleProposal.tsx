@@ -137,7 +137,7 @@ const MainContent = ({ proposal, space }: { proposal: Proposal; space: DetailedS
 				{votes && (
 					<SpaceProposalVotesList
 						proposal={proposal as Proposal}
-						votes={votes}
+						votes={votes.reverse()}
 						token={(space as Space).token}
 					/>
 				)}
